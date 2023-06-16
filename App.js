@@ -18,30 +18,57 @@ function StatusCard({ text }) {
   );
 }
 
-import { getNewsData } from './src/api/newsCategoriesAPI';
-
 export default function App() {
-  const [newsData, setNewsData] = useState(null);
+  const [cards, setCards] = useState();
 
+  // replace with real remote data fetching
   useEffect(() => {
-    const fetchNewsData = async () => {
-      try {
-        const data = await getNewsData();
-        setNewsData(data);
-      } catch (error) {
-        console.log('Error fetching user data:', error);
-      }
-    };
-
-    fetchNewsData();
+    setTimeout(() => {
+      setCards([
+        { text: "Tomato", backgroundColor: "red" },
+        { text: "Aubergine", backgroundColor: "purple" },
+        { text: "Courgette", backgroundColor: "green" },
+        { text: "Blueberry", backgroundColor: "blue" },
+        { text: "Umm...", backgroundColor: "cyan" },
+        { text: "orange", backgroundColor: "orange" },
+      ]);
+    }, 3000);
   }, []);
 
+  function handleYup(card) {
+    console.log(`Yup for ${card.text}`);
+    return true; // return false if you wish to cancel the action
+  }
+  function handleNope(card) {
+    console.log(`Nope for ${card.text}`);
+    return true;
+  }
+  function handleMaybe(card) {
+    console.log(`Maybe for ${card.text}`);
+    return true;
+  }
+
   return (
-    <View>
-      {newsData ? (
-        <Text>{JSON.stringify(newsData)}</Text>
+    <View style={styles.container}>
+      {cards ? (
+        <SwipeCards
+          cards={cards}
+          renderCard={(cardData) => <Card data={cardData} />}
+          keyExtractor={(cardData) => String(cardData.text)}
+          renderNoMoreCards={() => <StatusCard text="No more cards..." />}
+          actions={{
+            nope: { onAction: handleNope },
+            yup: { onAction: handleYup },
+            maybe: { onAction: handleMaybe },
+          }}
+          hasMaybeAction={true}
+
+          // If you want a stack of cards instead of one-per-one view, activate stack mode
+          stack={true}
+          stackDepth={3}
+        />
       ) : (
-        <Text>Loading user data...</Text>
+        <StatusCard text="Loading..." />
       )}
     </View>
   );
